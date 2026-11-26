@@ -1,3 +1,5 @@
+# commitMate
+
 ## 실행 방법
 ### 준비물
 - JDK 25, Node.js 26, Docker Desktop
@@ -14,3 +16,4 @@ docker compose up -d
 cd frontend
 npm install
 npm run dev
+# commitMate
