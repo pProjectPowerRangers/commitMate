@@ -1,0 +1,80 @@
+{
+  "projectId": 12,
+  "coverage": {
+    "score": 60,
+    "fullyCovered": false
+  },
+  "skills": [
+    {
+      "skillId": 3,
+      "name": "React",
+      "importance": "REQUIRED",
+      "weight": 3,
+      "requiredLevel": 2,
+      "teamMaxLevel": 0,
+      "fulfillment": 0,
+      "status": "MISSING",
+      "coveredBy": []
+    },
+    {
+      "skillId": 1,
+      "name": "Java",
+      "importance": "REQUIRED",
+      "weight": 3,
+      "requiredLevel": 2,
+      "teamMaxLevel": 3,
+      "fulfillment": 100,
+      "status": "FULFILLED",
+      "coveredBy": [
+        { "userId": 7, "nickname": "팀장현서", "level": 3 }
+      ]
+    },
+    {
+      "skillId": 2,
+      "name": "Spring Boot",
+      "importance": "REQUIRED",
+      "weight": 3,
+      "requiredLevel": 2,
+      "teamMaxLevel": 3,
+      "fulfillment": 100,
+      "status": "FULFILLED",
+      "coveredBy": [
+        { "userId": 7, "nickname": "팀장현서", "level": 3 }
+      ]
+    },
+    {
+      "skillId": 4,
+      "name": "Docker",
+      "importance": "PREFERRED",
+      "weight": 1,
+      "requiredLevel": 2,
+      "teamMaxLevel": 0,
+      "fulfillment": 0,
+      "status": "MISSING",
+      "coveredBy": []
+    }
+  ],
+  "roles": [
+    { "roleId": 21, "name": "백엔드", "capacity": 2, "filled": 1, "remaining": 1, "status": "OPEN" },
+    { "roleId": 22, "name": "프론트엔드", "capacity": 1, "filled": 0, "remaining": 1, "status": "OPEN" }
+  ],
+  "suggestions": [
+    {
+      "type": "SKILL_MISSING",
+      "targetId": 3,
+      "message": "필수 기술 React가 비어 있어요. React 레벨 2 이상 지원자를 먼저 검토해 보세요."
+    },
+    {
+      "type": "ROLE_OPEN",
+      "targetId": 22,
+      "message": "프론트엔드 자리가 1개 남았어요."
+    },
+    {
+      "type": "SKILL_MISSING",
+      "targetId": 4,
+      "message": "우대 기술 Docker를 가진 팀원이 없어요."
+    }
+  ],
+  "pendingApplicantCount": 3,
+  "calculatedAt": "2026-12-01T10:00:00+09:00"
+}
