@@ -1,7 +1,21 @@
 package com.commitmate.backend.matching;
 
 import java.util.*;
+/**
+ * 매칭 점수 계산기. 공식의 기호는 아래와 같다.
+ *
+ * <ul>
+ *   <li>L = 사용자(또는 팀원)가 가진 기술 레벨 1~4, 미보유면 0</li>
+ *   <li>r = 프로젝트가 요구하는 레벨 1~4 (팀장이 등록, 기본 2)</li>
+ *   <li>w = 가중치. 필수 3, 우대 1 (SkillRequirement.weight())</li>
+ *   <li>h = 사용자 주당 가능 시간, H = 프로젝트 기대 시간 (1~40)</li>
+ * </ul>
+ *
+ * <p>L / r 은 요구 대비 충족 비율이고, 요구 초과분은 min(1, L/r)로 잘라 점수에 넣지 않는다.
+ * <p>참고: docs/matching/scoring-rules.md "0. 기호"
+ */
 
+// 이 사람이 공고에 얼마나 맞나
 public class MatchingCalculator {
 
     /** skillMatch = 100 × Σ w·min(1, L/r) / Σ w */

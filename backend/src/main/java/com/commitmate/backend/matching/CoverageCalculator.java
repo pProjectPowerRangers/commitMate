@@ -2,6 +2,7 @@ package com.commitmate.backend.matching;
 
 import java.util.*;
 
+// 이 사람이 팀에 뭘 보태나
 public class CoverageCalculator {
 
     /** Coverage(T): 기술마다 팀 최고 레벨 기준 (합산 아님). */
