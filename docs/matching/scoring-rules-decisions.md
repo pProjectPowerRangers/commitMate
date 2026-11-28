@@ -1,4 +1,4 @@
-# StudyMatch 계산 규칙 결정 기록 (S0-4, C 담당 seoyeon)
+# CommitMate 계산 규칙 결정 기록 (S0-4, C 담당 seoyeon)
 
 ## 1. 반올림 (2026-11-26 확정)
 - 계산은 정수 분자/분모(또는 BigDecimal)로 끝까지 유지, 화면 표시 직전에만 정수 HALF_UP.
