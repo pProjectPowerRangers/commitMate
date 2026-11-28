@@ -11,6 +11,8 @@ import java.math.RoundingMode;
  * <ul>
  *   <li>계산·정렬·비교: 반올림하지 않은 정확한 분수로 한다 (compareTo, plus, times)</li>
  *   <li>화면 표시: display()에서 딱 한 번만 정수로 반올림(HALF_UP)한다. 버림 아님 (12.5 → 13)</li>
+ *   <li>단, 정확한 값이 100 미만이면 표시는 최대 99 (99.72 → 99). "100"은 진짜로 다 채웠을 때만 보인다
+ *       → 화면의 100과 fullyCovered(정확값 == 100)가 서로 어긋나지 않는다 (PR #50 코멘트 5 결론)</li>
  *   <li>double을 쓰지 않는 이유: 1/3 같은 값이 오차로 12.5 → 12.4999가 되어 반올림이 틀어질 수 있음</li>
  *   <li>생성 시 최대공약수(g)로 약분해서 같은 값은 항상 같은 모양, 숫자가 커지는 것도 막는다 (50/4 → 25/2)</li>
  * </ul>
@@ -28,9 +30,11 @@ public record Score(long num, long den) implements Comparable<Score> {
     }
     public static Score of(long num, long den) { return new Score(num, den); }
 
-    /** 화면 표시용 정수 (HALF_UP). */
+    /** 화면 표시용 정수 (HALF_UP). 정확한 값이 100 미만이면 반올림해도 최대 99. */
     public int display() {
-        return BigDecimal.valueOf(num).divide(BigDecimal.valueOf(den), 0, RoundingMode.HALF_UP).intValueExact();
+        int rounded = BigDecimal.valueOf(num).divide(BigDecimal.valueOf(den), 0, RoundingMode.HALF_UP).intValueExact();
+        if (rounded >= 100 && compareTo(HUNDRED) < 0) return 99;   // 99.5 ~ 99.99… → 99
+        return rounded;
     }
     public BigDecimal toBigDecimal(int scale) {
         return BigDecimal.valueOf(num).divide(BigDecimal.valueOf(den), scale, RoundingMode.HALF_UP);
