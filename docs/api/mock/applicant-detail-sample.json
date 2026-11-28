@@ -1,0 +1,23 @@
+{
+  "applicationId": 301,
+  "applicant": { "userId": 41, "nickname": "지원자B" },
+  "role": { "roleId": 22, "name": "프론트엔드", "remaining": 1 },
+  "status": "PENDING",
+  "appliedAt": "2026-11-30T14:10:00+09:00",
+  "motivation": "React로 사이드 프로젝트 두 번 해봤어요. 주말에 집중해서 참여할 수 있어요.",
+  "scores": { "matchScore": 47, "skill": 55, "interest": 0, "availability": 72 },
+  "contribution": 100,
+  "coverage": { "before": 60, "after": 100 },
+  "skills": [
+    { "skillId": 3, "name": "React", "importance": "REQUIRED", "requiredLevel": 2, "applicantLevel": 3, "teamMaxLevel": 0, "effect": "FILLS" },
+    { "skillId": 1, "name": "Java", "importance": "REQUIRED", "requiredLevel": 2, "applicantLevel": 1, "teamMaxLevel": 3, "effect": "ALREADY_COVERED" },
+    { "skillId": 2, "name": "Spring Boot", "importance": "REQUIRED", "requiredLevel": 2, "applicantLevel": 0, "teamMaxLevel": 3, "effect": "ALREADY_COVERED" },
+    { "skillId": 4, "name": "Docker", "importance": "PREFERRED", "requiredLevel": 2, "applicantLevel": 2, "teamMaxLevel": 0, "effect": "FILLS" }
+  ],
+  "reasons": [
+    "비어 있던 필수 기술 React를 채워요 (레벨 3 / 요구 2)",
+    "필수 Spring Boot 미보유 (팀이 충족 중)",
+    "주말 시간대가 겹쳐요 (주 6시간 / 기대 10시간)"
+  ],
+  "badges": ["COVERED_BY_TEAM"]
+}
