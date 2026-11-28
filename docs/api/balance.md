@@ -19,15 +19,16 @@
 | `projectId` | number | |
 | `coverage.score` | number (0~100 정수) | 팀 커버리지, 화면 표시용 HALF_UP 정수 |
 | `coverage.fullyCovered` | boolean | 100이면 true. 지원자 탭의 "요구 기술을 모두 충족한 팀" 문구, 매칭 점수순 정렬 전환에 사용 |
-| `skills[]` | array | 요구 기술별 충족 현황. **정렬: 필수 먼저 → 같은 중요도 안에서 부족한 것 먼저(MISSING → PARTIAL → FULFILLED) → 이름순**. 서버가 정렬해서 내려줌 |
+| `skills[]` | array | 프로젝트 요구 기술(팀장이 등록한 것)별 충족 현황. **정렬: 필수 먼저 → 같은 중요도 안에서 부족한 것 먼저(MISSING → PARTIAL → FULFILLED) → 이름순**. 서버가 정렬해서 내려줌 |
 | `skills[].skillId` | number | |
 | `skills[].name` | string | |
 | `skills[].importance` | `REQUIRED` \| `PREFERRED` | |
 | `skills[].weight` | number | 필수 3, 우대 1 (설정값이라 내려줌) |
 | `skills[].requiredLevel` | number (1~4) | |
 | `skills[].teamMaxLevel` | number (0~4) | 팀원 중 최고 레벨, 없으면 0 |
-| `skills[].fulfillment` | number (0~100 정수) | 100 × min(1, teamMaxLevel / requiredLevel). **막대 길이** |
-| `skills[].status` | `FULFILLED` \| `PARTIAL` \| `MISSING` | 100 / 1~99 / 0. **막대 색** |
+| `skills[].fulfillment` | number (0~100 정수) | 100 × min(1, teamMaxLevel / requiredLevel). 정렬·부족 정도 판단용 |
+| `skills[].status` | `FULFILLED` \| `PARTIAL` \| `MISSING` | 100 / 1~99 / 0. **역량 막대 색** (FULFILLED = 초록) |
+> 역량 막대 그리는 법: 막대 길이 = `teamMaxLevel`(0~4), 요구 레벨 선 = `requiredLevel`. `status`가 FULFILLED면 초록색으로 칠하고 선은 생략. (11/27 D 의견 반영)
 | `skills[].coveredBy[]` | array | 이 기술을 가진 팀원 (레벨 높은 순). `userId`, `nickname`, `level` |
 | `roles[]` | array | 역할별 충원 현황 (등록 순) |
 | `roles[].roleId` · `name` | number · string | |
@@ -60,6 +61,6 @@
 
 ## 5. D에게 확인받을 것 ❓
 
-1. 막대 차트에 `fulfillment` 하나면 충분한지, 아니면 요구 레벨 선과 팀 레벨을 따로 그릴지 (`requiredLevel`·`teamMaxLevel`로 그릴 수 있게 둘 다 넣어둠)
-2. `suggestions` 문구를 서버가 만드는 게 편한지, type만 받고 화면에서 문구를 만들지
-3. 지원자 카드에 "이 사람이 들어오면 커버리지 60 → 75" 미리보기를 넣을지. 넣으면 지원자 목록 API(C-4) 쪽 필드로 추가할 예정
+1. ~~막대 차트에 fulfillment 하나면 충분한지~~ → 결정: 역량 막대, 길이 teamMaxLevel + requiredLevel 선, 충족 시 초록 (D 코멘트)
+2. ~~suggestions 문구를 서버가 만들지, 화면이 만들지~~ → 결정: 서버가 만듦. 프론트는 type으로 아이콘·색·배치를 정하고 message는 그대로 표시 (D 코멘트)
+3. ~~지원자 카드 커버리지 미리보기~~ → 결정: 목록 카드는 기여도 숫자만, 지원자 상세 화면에서 커버리지 전/후와 기술별 3색(FILLS / ALREADY_COVERED / NO_GAIN) 표시. 지원자 API 명세(C-4)에서 다룸 (D 코멘트)
