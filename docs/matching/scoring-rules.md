@@ -24,11 +24,11 @@
 ## 2. 확정한 결정
 | # | 항목 | 결정 |
 |---|---|---|
-| 1 | 반올림 | 계산은 정확한 분수로 끝까지 유지, **화면 표시 직전에만 정수 HALF_UP**. 정렬은 반올림 전 값. (double 금지: 12.5가 12.4999…가 될 수 있음. L/r 분모를 12로 통일하면 분자·분모가 모두 정수) |
+| 1 | 반올림 | 계산은 정확한 분수로 끝까지 유지, **화면 표시 직전에만 정수 HALF_UP**. 단, 정확한 값이 100 미만이면 표시는 **최대 99** (99.72 → 99, "100"은 진짜 다 채웠을 때만. PR #50 코멘트 5). 정렬은 반올림 전 값. (double 금지: 12.5가 12.4999…가 될 수 있음. L/r 분모를 12로 통일하면 분자·분모가 모두 정수) |
 | 2 | 레벨 | 미보유 0, 부분 충족은 선형 L/r, 요구 레벨 초과분은 점수 미반영(추천 이유 문구로만 표시), 요구하지 않은 기술은 계산 제외 |
 | 3 | 커버리지·기여도 | 팀 커버리지 100이면 기여도 **값 없음**, 카드에 "요구 기술을 모두 충족한 팀", 정렬은 매칭 점수순. 기여도는 항상 0~100. 정원 초과 역할 지원자도 계산하고 배지만 추가 |
 | 4 | 가능 시간 | 사용자 시간이 기대 시간보다 많아도 상한 70. 시간대는 겹침 여부만. 비어 있으면 해당 파트 0점 + 추천 이유 "가능 시간 미입력" |
-| 5 | 비율·가중치 | 60/20/20, 필수 3·우대 1. **초기값**: 설정(application.yml)으로 빼고 Sprint 2 시드 데이터로 조정 |
+| 5 | 비율·가중치 | 60/20/20, 필수 3·우대 1, 시간 70/30. **초기값**: `application.yml`의 `commitmate.scoring`으로 분리 완료(C-1, `ScoringWeights`), Sprint 2 시드 데이터로 조정. 합이 100이 아니거나 필수 < 우대면 서버 시작 실패 |
 | 6 | 정렬 동점 | 기여도 desc → 매칭 점수 desc → 지원일 asc |
 
 ## 3. 예시 계산표 (단위 테스트와 동일)
@@ -55,6 +55,7 @@
 | 승인으로 팀 커버리지 100 도달 | 남은 지원자 기여도가 모두 "없음"으로 바뀜 |
 | 사용자 주당 시간 0 / 미입력 | 시간 파트 0점 |
 | 요구 r=3, 레벨 1 / 2 | 33.33 → 33 / 66.67 → 67 |
+| 정확한 값 99.5 이상 100 미만 (예: 99.72) | 표시 99 (100 아님) |
 | 레벨 0·5·null, 요구 레벨 0·5 | IllegalArgumentException |
 | 요구 기술 0개 | IllegalArgumentException (등록 시 필수 기술 1개 이상 강제) |
 | 프로젝트 기대 시간 0·null, 시간대 없음 | IllegalArgumentException |
@@ -66,3 +67,10 @@
 
 ## 6. 테스트
 `backend/src/test/java/com/commitmate/backend/matching/ScoringRulesTest.java` (JUnit 5 `@ParameterizedTest`, AssertJ). 357개 케이스 통과(기여도 0~100 불변식 무작위 300개 포함, seed 고정).
+`MatchingEngineTest.java` (C-1): 표시 최대 99, 가중치 바꿔 끼우기, yml 바인딩·잘못된 값 시작 실패, `MatchingService` 예시표. 23개. 둘 다 DB 없이 `./gradlew test --tests 'com.commitmate.backend.matching.*'`로 실행.
+
+## 7. Spring에서 쓰는 법 (C-1)
+- 주입: `MatchingService` (계산기는 순수 자바, `MatchingConfig`가 yml 가중치로 빈 등록)
+- 입력: `ProjectCriteria(요구 기술, 기대 시간·시간대, 분야)`, `Candidate(기술 맵, 가능 시간·시간대, 관심 분야)`. 엔티티 → record 변환은 C-4에서
+- 출력: `MatchBreakdown(skill, interest, availability, total)`, `coverage`, `contribution`(팀 100이면 empty), `rank`(기본 정렬)
+- 회의 뒤로 미룬 것: 분야를 `ProjectField` enum으로 전환(지금은 String, 이슈 #3), 추천 이유·"필수 기술 미보유" 배지
