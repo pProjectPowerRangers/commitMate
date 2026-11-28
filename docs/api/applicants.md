@@ -73,6 +73,7 @@
 | `skills[].applicantLevel` | number (0~4) | 지원자 레벨, 없으면 0 |
 | `skills[].teamMaxLevel` | number (0~4) | 지금 팀 최고 레벨 |
 | `skills[].effect` | `FILLS` \| `ALREADY_COVERED` \| `NO_GAIN` | **3색 역량 막대 색**. 아래 규칙 |
+| `extraSkills[]` | array | 프로젝트가 요구하지 않은 지원자 보유 기술 (`name`, `level`). 표시만, 점수 미반영 |
 | `reasons[]` | string[] | 추천 이유 전부 |
 
 `effect` 규칙 (서버가 계산):
@@ -109,3 +110,12 @@
 1. 목록 카드 추천 이유를 최대 2개로 자를지, 개수 제한 없이 주고 화면에서 자를지
 2. 지원자가 많아질 때 페이지네이션이 필요한지 (MVP는 프로젝트당 지원자가 적어서 없이 시작 제안)
 3. 상세 화면에 협업 온도(B)도 같이 보여줄지. 보여주면 `applicant.temperature` 추가 (매칭 점수엔 안 넣음)
+
+## 6. 다음 단계 (Sprint 2, P1) — D 인터뷰 의견
+
+- 기술 체크박스 필터: `GET /api/projects/{projectId}/applicants?skillIds=3,7`
+    - `applicants[].passesFilter`: boolean. 체크한 기술을 전부 요구 레벨 이상 가지면 true (점수 없이 통과/미달만)
+    - 정렬: 통과한 사람 먼저(기존 `sort` 그대로) → 미달은 맨 아래, 화면은 회색
+    - `skillIds`가 없으면 `passesFilter` 생략
+- 미달자 일괄 거절: MVP 제외 (거절 API를 여러 명용으로 새로 만들어야 함)
+- 비슷한 기술 추천(요구 안 한 기술 활용): AI 임베딩 매칭 도입 때 검토
