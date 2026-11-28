@@ -56,13 +56,14 @@
 | 사용자 주당 시간 0 / 미입력 | 시간 파트 0점 |
 | 요구 r=3, 레벨 1 / 2 | 33.33 → 33 / 66.67 → 67 |
 | 레벨 0·5·null, 요구 레벨 0·5 | IllegalArgumentException |
-| 요구 기술 0개 | IllegalArgumentException (등록 시 필수 기술 1개 이상 강제) |
+| 요구 기술 0개 | IllegalArgumentException (등록 시 필수(`mandatory = true`) 기술 1개 이상 강제, 우대 기술만으로는 등록 불가) |
+| 요구 기술 skillId 중복 | IllegalArgumentException (중복이면 가중치가 두 번 반영됨. 예: Java 필수 ×2 + React 필수에서 React만 가진 사람 50 → 33) |
 | 프로젝트 기대 시간 0·null, 시간대 없음 | IllegalArgumentException |
 
 ## 5. 다른 담당에게 요청할 것
 - **A(현서)**: 프로필에서 주당 가능 시간·선호 시간대 필수 입력, 기술 레벨은 1~4만 허용
-- **B(hwangddijoon)**: 프로젝트 등록 시 필수 기술 1개 이상, 요구 레벨 1~4, 기대 시간 1~40, 시간대 1개 이상 검증
+- **B(hwangddijoon)**: 프로젝트 등록 시 필수(`mandatory = true`) 기술 1개 이상, 요구 기술 skillId 중복 불가(가능하면 `(project_id, skill_id)` 유니크 제약), 요구 레벨 1~4, 기대 시간 1~40, 시간대 1개 이상 검증
 - **팀 전체**: 예시표의 A 기여도 13은 "12.5를 HALF_UP"한 값임을 기획서에 각주로 추가
 
 ## 6. 테스트
-`backend/src/test/java/com/commitmate/backend/matching/ScoringRulesTest.java` (JUnit 5 `@ParameterizedTest`, AssertJ). 357개 케이스 통과(기여도 0~100 불변식 무작위 300개 포함, seed 고정).
+`backend/src/test/java/com/commitmate/backend/matching/ScoringRulesTest.java` (JUnit 5 `@ParameterizedTest`, AssertJ). 358개 케이스 통과(기여도 0~100 불변식 무작위 300개 포함, seed 고정).

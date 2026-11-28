@@ -232,6 +232,14 @@ class ScoringRulesTest {
             assertThatIllegalArgumentException().isThrownBy(() -> matching.skillMatch(List.of(), APPLICANT_A));
         }
 
+        @Test @DisplayName("요구 기술 skillId 중복 (Java 필수 ×2 + React 필수)")
+        void duplicateSkillId() {
+            List<SkillRequirement> dup = List.of(
+                    new SkillRequirement(1, 2, true), new SkillRequirement(1, 2, true), new SkillRequirement(3, 2, true));
+            assertThatIllegalArgumentException().isThrownBy(() -> matching.skillMatch(dup, skills("REACT:2")));
+            assertThatIllegalArgumentException().isThrownBy(() -> coverage.coverage(dup, team("REACT:2")));
+        }
+
         @ParameterizedTest(name = "프로젝트 기대 시간 {0}")
         @NullSource @ValueSource(ints = {0, -3})
         void projectHoursInvalid(Integer hours) {

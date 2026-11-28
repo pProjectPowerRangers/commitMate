@@ -45,6 +45,9 @@ public class MatchingCalculator {
 
     static Score weightedFulfillment(List<SkillRequirement> reqs, java.util.function.ToIntFunction<Long> level) {
         if (reqs == null || reqs.isEmpty()) throw new IllegalArgumentException("at least one skill requirement");
+        // 같은 skillId가 두 번 들어오면 가중치가 두 번 더해져 점수가 조용히 틀어진다 (예: React만 가진 사람 50 → 33)
+        if (reqs.stream().map(SkillRequirement::skillId).distinct().count() != reqs.size())
+            throw new IllegalArgumentException("duplicate skillId in requirements");
         long n = 0, d = 0;
         for (SkillRequirement r : reqs) {
             int L = level.applyAsInt(r.skillId());
