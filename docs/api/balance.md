@@ -11,14 +11,14 @@
 - 인증 필요 (JWT). **팀장 전용**
 - 기준 팀원 T = 승인된 팀원(팀장 포함). 검토 중 지원자는 계산에 넣지 않음
 - 승인·거절 후 화면은 이 API를 다시 호출해서 새로고침
-
+- 요구 기술은 A의 기술 목록(카테고리 BACKEND·FRONTEND·DEVOPS·AI_DATA·DESIGN)에서 고름. 목 데이터의 개발 기술은 계산 규칙 예시표를 그대로 쓴 것이고, 디자인 기술(예: Figma)도 같은 방식으로 계산됨
 ## 2. 응답 200
 
 | 필드 | 타입 | 설명 |
 |---|---|---|
 | `projectId` | number | |
-| `coverage.score` | number (0~100 정수) | 팀 커버리지, 화면 표시용 HALF_UP 정수 |
-| `coverage.fullyCovered` | boolean | 100이면 true. 지원자 탭의 "요구 기술을 모두 충족한 팀" 문구, 매칭 점수순 정렬 전환에 사용 |
+| `coverage.score` | number (0~100 정수) | 팀 커버리지 표시값. HALF_UP 반올림하되, 정확한 값이 100 미만이면 최대 99 |
+| `coverage.fullyCovered` | boolean | **반올림 전 정확한 값**이 100이면 true. 그래서 score가 100이면 항상 true |
 | `skills[]` | array | 프로젝트 요구 기술(팀장이 등록한 것)별 충족 현황. **정렬: 필수 먼저 → 같은 중요도 안에서 부족한 것 먼저(MISSING → PARTIAL → FULFILLED) → 이름순**. 서버가 정렬해서 내려줌 |
 | `skills[].skillId` | number | |
 | `skills[].name` | string | |
@@ -28,7 +28,6 @@
 | `skills[].teamMaxLevel` | number (0~4) | 팀원 중 최고 레벨, 없으면 0 |
 | `skills[].fulfillment` | number (0~100 정수) | 100 × min(1, teamMaxLevel / requiredLevel). 정렬·부족 정도 판단용 |
 | `skills[].status` | `FULFILLED` \| `PARTIAL` \| `MISSING` | 100 / 1~99 / 0. **역량 막대 색** (FULFILLED = 초록) |
-> 역량 막대 그리는 법: 막대 길이 = `teamMaxLevel`(0~4), 요구 레벨 선 = `requiredLevel`. `status`가 FULFILLED면 초록색으로 칠하고 선은 생략. (11/27 D 의견 반영)
 | `skills[].coveredBy[]` | array | 이 기술을 가진 팀원 (레벨 높은 순). `userId`, `nickname`, `level` |
 | `roles[]` | array | 역할별 충원 현황 (등록 순) |
 | `roles[].roleId` · `name` | number · string | |
@@ -40,6 +39,9 @@
 | `suggestions[].message` | string | 서버가 만든 한국어 문구, 화면은 그대로 표시 |
 | `pendingApplicantCount` | number | 검토 중 지원자 수 ("지원자 3명 검토하기" 버튼용) |
 | `calculatedAt` | string (ISO-8601, +09:00) | |
+> 역량 막대 그리는 법: 막대 길이 = `teamMaxLevel`(0~4), 요구 레벨 선 = `requiredLevel`. `status`가 FULFILLED면 초록색으로 칠하고 선은 생략. (11/27 D 의견 반영)
+
+> 요구 기술이 0개인 프로젝트(정상 등록에선 불가, 시드·옛 데이터 대비): `skills`와 `suggestions`는 빈 배열, `coverage`는 null. 화면은 커버리지 영역을 숨김. (D 코멘트)
 
 예시: 목 데이터 참고. 계산 규칙 예시표와 같은 상황이에요 (팀장 Java 3·Spring Boot 3, 요구 Java·Spring Boot·React 필수 r2, Docker 우대 r2 → 커버리지 60).
 
