@@ -1,0 +1,38 @@
+{
+  "projectId": 12,
+  "sort": "contribution",
+  "status": "PENDING",
+  "teamCoverage": { "score": 60, "fullyCovered": false },
+  "applicants": [
+    {
+      "applicationId": 301,
+      "applicant": { "userId": 41, "nickname": "지원자B" },
+      "role": { "roleId": 22, "name": "프론트엔드" },
+      "status": "PENDING",
+      "appliedAt": "2026-11-30T14:10:00+09:00",
+      "matchScore": 47,
+      "contribution": 100,
+      "summary": {
+        "requiredHave": [{ "name": "React", "fills": true }],
+        "requiredMissing": ["Java", "Spring Boot"],
+        "slotMatch": true
+      },
+      "badges": ["COVERED_BY_TEAM"]
+    },
+    {
+      "applicationId": 300,
+      "applicant": { "userId": 40, "nickname": "지원자A" },
+      "role": { "roleId": 21, "name": "백엔드" },
+      "status": "PENDING",
+      "appliedAt": "2026-11-30T09:00:00+09:00",
+      "matchScore": 79,
+      "contribution": 13,
+      "summary": {
+        "requiredHave": [{ "name": "Java", "fills": false }, { "name": "Spring Boot", "fills": false }],
+        "requiredMissing": ["React"],
+        "slotMatch": true
+      },
+      "badges": []
+    }
+  ]
+}
