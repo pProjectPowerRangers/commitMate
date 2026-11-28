@@ -11,3 +11,18 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
+# 매칭 계산 규칙 숫자 (docs/matching/scoring-rules.md 결정 5). 초기값이고 Sprint 2 시드 데이터로 조정 예정
+# 잘못된 값(합이 100이 아님, 필수 < 우대)이면 서버 시작 시 실패한다 → ScoringWeights
+commitmate:
+  scoring:
+    skill-weight:          # 기술 중요도 w
+      mandatory: 3         # 필수
+      preferred: 1         # 우대
+    match-ratio:           # matchScore 비율(%), 합 100
+      skill: 60
+      interest: 20
+      availability: 20
+    availability-points:   # 가능 시간 점수 배분, 합 100
+      hours: 70            # 주당 시간 충족
+      slot: 30             # 시간대 하나라도 겹침

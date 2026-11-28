@@ -16,10 +16,18 @@ import java.util.*;
  */
 public class CoverageCalculator {
 
+    private final ScoringWeights weights;
+
+    /** 확정 기본값(필수 3·우대 1)으로 만든다. 순수 단위 테스트용. */
+    public CoverageCalculator() { this(ScoringWeights.DEFAULT); }
+
+    /** yml에서 읽은 가중치로 만든다. Spring에서는 {@link MatchingConfig}가 이 생성자를 쓴다. */
+    public CoverageCalculator(ScoringWeights weights) { this.weights = Objects.requireNonNull(weights); }
+
     /** Coverage(T): 기술마다 팀 최고 레벨 기준 (합산 아님). */
     public Score coverage(List<SkillRequirement> reqs, List<Map<Long, Integer>> members) {
         members.forEach(Levels::checkAll);
-        return MatchingCalculator.weightedFulfillment(reqs,
+        return MatchingCalculator.weightedFulfillment(reqs, weights.skillWeight(),
                 s -> members.stream().mapToInt(m -> m.getOrDefault(s, 0)).max().orElse(0));
     }
 
