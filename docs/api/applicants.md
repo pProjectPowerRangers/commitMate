@@ -8,8 +8,8 @@
 
 | 화면 | 보여주는 것 | API |
 |---|---|---|
-| 지원자 목록 (지원자 탭의 카드 한 줄씩) | 매칭 점수, 기여도 숫자, 추천 이유, 배지 | `GET /api/projects/{projectId}/applicants` |
-| 지원자 상세 (카드 클릭) | 위 내용 + 동기, 점수 내역, 커버리지 전/후, 기술별 3색 역량 막대 | `GET /api/projects/{projectId}/applicants/{applicationId}` |
+| 지원자 목록 (지원자 탭의 카드 한 줄씩) | 매칭 점수, 기여도 숫자, 기술 요약 태그(`summary`), 배지 | `GET /api/projects/{projectId}/applicants` |
+| 지원자 상세 (카드 클릭) | 위 내용 + 동기, 점수 내역, 커버리지 전/후, 기술별 3색 역량 막대, 추천 이유 문장 | `GET /api/projects/{projectId}/applicants/{applicationId}` |
 
 목록에는 그래프를 넣지 않음. 커버리지 전/후는 기여도와 같은 정보라 상세에서만 풀어서 보여줌.
 
@@ -45,14 +45,17 @@
 | `applicants[].appliedAt` | string (ISO-8601, +09:00) | |
 | `applicants[].matchScore` | number (0~100) | |
 | `applicants[].contribution` | number (0~100) \| **null** | 팀 커버리지 100이면 null |
-| `applicants[].reasons[]` | string[] | 추천 이유, 최대 2개 (상세는 전부) |
+| `applicants[].summary.requiredHave[]` | array | 필수 기술 중 지원자 레벨 ≥ 요구 레벨인 것. `name`, `fills`(boolean: 상세 `effect`가 `FILLS`면 true → 화면 **볼드**) |
+| `applicants[].summary.requiredMissing[]` | string[] | 필수 기술 중 지원자 레벨 < 요구 레벨인 것 (미보유 포함), 기술 이름 |
+| `applicants[].summary.slotMatch` | boolean | 선호 시간대가 프로젝트와 하나라도 겹치면 true |
 | `applicants[].badges[]` | string[] | 아래 배지 표 |
+
+**목록에는 추천 이유 문장(`reasons`)을 넣지 않음** (PR #50 D 코멘트). 점수 아래 문장이 길면 눈에 안 들어오고 배지와 같은 말이 반복돼서, 목록은 `summary`로 3칸 태그(`필수 보유: React(볼드)` · `시간대 일치` · `필수 미보유: Spring Boot`)를 그리고 문장 이유는 상세에서만 보여줌. 태그 순서는 `skills[]`와 같은 기술 정렬, 많으면 프론트에서 접기(예: "+2").
 
 ### 배지
 
 | 값 | 뜻 | 화면 예시 |
 |---|---|---|
-| `MISSING_REQUIRED` | 지원자가 필수 기술을 안 가졌고 팀도 아직 부족 | "필수 기술 미보유" |
 | `COVERED_BY_TEAM` | 지원자가 필수 기술을 안 가졌지만 팀이 이미 충족 | "팀이 충족 중" |
 | `ROLE_FULL` | 지원한 역할 정원이 이미 참 (점수는 계산함) | "정원 초과" |
 
@@ -74,7 +77,7 @@
 | `skills[].teamMaxLevel` | number (0~4) | 지금 팀 최고 레벨 |
 | `skills[].effect` | `FILLS` \| `ALREADY_COVERED` \| `NO_GAIN` | **3색 역량 막대 색**. 아래 규칙 |
 | `extraSkills[]` | array | 프로젝트가 요구하지 않은 지원자 보유 기술 (`name`, `level`). 표시만, 점수 미반영 |
-| `reasons[]` | string[] | 추천 이유 전부 |
+| `reasons[]` | string[] | 추천 이유 문장 전부 (상세에서만). 나중에 Bedrock 추천 이유로 바꿀 자리 |
 
 `effect` 규칙 (서버가 계산):
 1. 팀이 이미 요구 레벨 이상 (`teamMaxLevel ≥ requiredLevel`) → `ALREADY_COVERED`
@@ -98,16 +101,16 @@
 
 팀장(Java 3, Spring Boot 3), 요구 Java·Spring Boot·React 필수 r2, Docker 우대 r2 → 팀 커버리지 60.
 
-| 지원자 | 매칭 | 기여도 | 커버리지 전 → 후 | 배지 |
-|---|---|---|---|---|
-| B (React 3, Java 1, Docker 2) | 47 | 100 | 60 → 100 | 팀이 충족 중 |
-| A (Java 4, Spring Boot 4, Docker 1) | 79 | 13 | 60 → 65 | 필수 기술 미보유 |
+| 지원자 | 매칭 | 기여도 | 커버리지 전 → 후 | 목록 태그 (`summary`) | 배지 |
+|---|---|---|---|---|---|
+| B (React 3, Java 1, Docker 2) | 47 | 100 | 60 → 100 | 보유 **React** · 시간대 일치 · 미보유 Java, Spring Boot | 팀이 충족 중 |
+| A (Java 4, Spring Boot 4, Docker 1) | 79 | 13 | 60 → 65 | 보유 Java, Spring Boot · 시간대 일치 · 미보유 React | 없음 |
 
 기여도순이면 B가 위, 매칭순이면 A가 위.
 
 ## 5. D에게 확인받을 것 ❓
 
-1. 목록 카드 추천 이유를 최대 2개로 자를지, 개수 제한 없이 주고 화면에서 자를지
+1. ~~목록 카드 추천 이유를 최대 2개로 자를지~~ → **결정(11/28)**: 목록은 문장 대신 `summary` 태그, 문장 이유는 상세로 이동, `MISSING_REQUIRED` 배지는 `requiredMissing`과 겹쳐서 삭제
 2. 지원자가 많아질 때 페이지네이션이 필요한지 (MVP는 프로젝트당 지원자가 적어서 없이 시작 제안)
 3. 상세 화면에 협업 온도(B)도 같이 보여줄지. 보여주면 `applicant.temperature` 추가 (매칭 점수엔 안 넣음)
 

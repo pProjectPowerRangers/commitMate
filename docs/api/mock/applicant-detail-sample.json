@@ -14,6 +14,11 @@
     { "skillId": 2, "name": "Spring Boot", "importance": "REQUIRED", "requiredLevel": 2, "applicantLevel": 0, "teamMaxLevel": 3, "effect": "ALREADY_COVERED" },
     { "skillId": 4, "name": "Docker", "importance": "PREFERRED", "requiredLevel": 2, "applicantLevel": 2, "teamMaxLevel": 0, "effect": "FILLS" }
   ],
+  "summary": {
+    "requiredHave": [{ "name": "React", "fills": true }],
+    "requiredMissing": ["Java", "Spring Boot"],
+    "slotMatch": true
+  },
   "reasons": [
     "비어 있던 필수 기술 React를 채워요 (레벨 3 / 요구 2)",
     "필수 Spring Boot 미보유 (팀이 충족 중)",
